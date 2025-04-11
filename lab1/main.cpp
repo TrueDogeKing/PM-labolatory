@@ -11,12 +11,12 @@ int* variation;
 int* bestCycle;
 float bestDistance = 1000;
 
-float italy[15][2] = { 0 };       
-int population[15] = { 0 };       
+float italy[15][2] = { 0 };
+int population[15] = { 0 };
 int maxPopulation = 0;
 int counter = 0;
-int id[15];                       
-string cityName[15];                 
+int id[15];
+string cityName[15];
 
 void ShortestCycle(int iterator) {
     float distance = 0;
@@ -42,10 +42,14 @@ void ShortestCycle(int iterator) {
 bool IsPopulationInRange(int iterator) {
     int populationSum = 0;
     for (int i = 0; i < iterator; i++) {
+        if (variation[i - 1] == variation[i] && i>0)
+            continue;
         int j = variation[i] - 1;
         populationSum += population[j];
     }
-    return (populationSum < maxPopulation * 0.6 && populationSum > maxPopulation * 0.4);
+    float precent = float(float(populationSum)/maxPopulation);
+    printf("population sum:%f\n", precent);
+    return (precent <=  0.6 && precent >=  0.4);
 }
 
 void Variations(int depth, int size, int iterator) {
@@ -57,8 +61,6 @@ void Variations(int depth, int size, int iterator) {
 
         ShortestCycle(iterator);
 
-        if (IsPopulationInRange(iterator))
-            counter++;
 
         ilosc++;
         return;
@@ -93,7 +95,8 @@ void Combinations(int depth, int size, int iterator, int start) {
             printf("%d ", variation[j]);
         printf("\n");
 
-        if (IsPopulationInRange(iterator))
+
+        if (IsPopulationInRange(iterator)) 
             counter++;
 
         ilosc++;
@@ -133,8 +136,8 @@ void MaxPopulation(int n) {
 }
 
 int main() {
-    int m = 3;
-    int n = 4;
+    int m = 4;
+    int n = 9;
     int size = 15;
 
     variation = new int[size];
@@ -166,7 +169,7 @@ int main() {
         printf("%d ", bestCycle[i]);
     }
     for (int i = 0; i < m; i++) {
-        cout << cityName[bestCycle[i]-1]<<" ";
+        cout << cityName[bestCycle[i] - 1] << " ";
     }
     printf("\nDistance: %f\n", bestDistance);
 
@@ -175,8 +178,8 @@ int main() {
 
     Combinations(m, n, 0, 1);
 
-    float szansa = ((float)counter / ilosc)*100;
-    printf("chance for population in range of 0.6*MaxPopulation and 0.8*MaxPopulation: %d/%d = %.2f%%\n", counter, ilosc, szansa);
+    float szansa = ((float)counter / ilosc) * 100;
+    printf("chance for population in range of 0.4*MaxPopulation and 0.6*MaxPopulation: %d/%d = %.2f%%\n", counter, ilosc, szansa);
 
     delete[] variation;
     delete[] bestCycle;
